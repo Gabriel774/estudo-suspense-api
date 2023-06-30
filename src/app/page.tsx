@@ -1,113 +1,134 @@
-import Image from 'next/image'
+"use client";
+import Image from "next/image";
+import { AiOutlineSearch } from "react-icons/ai";
+import { useState, Suspense } from "react";
+import { Pokemon } from "./interfaces/Pokemon";
+import ReactLoading from "react-loading";
 
 export default function Home() {
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState(false);
+  const [data, setData] = useState<null | Pokemon>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingImage, setLoadingImage] = useState(false);
+
+  const pokemonTypes: { [key: string]: string } = {
+    electric: "bg-yellow-500",
+    fire: "bg-rose-400",
+    bug: "bg-lime-400",
+    grass: "bg-lime-400",
+    ghost: "bg-violet-400",
+    poison: "bg-purple-400",
+    flying: "bg-cyan-300",
+    ice: "bg-indigo-600",
+    normal: "bg-neutral-200",
+    steel: "bg-green-400",
+    water: "bg-sky-400",
+    rock: "bg-orange-400",
+    fighting: "bg-orange-400",
+    ground: "bg-orange-400",
+    fairy: "bg-purple-400",
+    psychic: "bg-purple-400",
+    dragon: "bg-sky-400",
+  };
+
+  async function getData() {
+    if (search === "" || (data && data.forms[0].name == search)) return;
+    setLoading(true);
+    setData(null);
+    setError(false);
+    setLoadingImage(true);
+
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${search}`);
+
+    await res
+      .json()
+      .then((value) => setData(value))
+      .catch((err) => {
+        setError(true);
+      });
+    setLoading(false);
+    setSearch("");
+  }
+
+  console.log(data ? data.sprites.other["official-artwork"] : "");
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 ">
+      <Image
+        alt="Poke Search"
+        src={"/logo.png"}
+        width={500}
+        height={260}
+        priority={true}
+      />
+      <div className="flex m-2">
+        <input
+          type="text"
+          placeholder="Nome do Pokemon"
+          className="outline-none px-2 py-4 rounded-l-lg"
+          onInput={(e) => {
+            /* @ts-ignore */
+            setSearch(e.target.value);
+          }}
+          value={search}
         />
+        <button className="bg-rose-500 px-4 rounded-r-lg" onClick={getData}>
+          <AiOutlineSearch size={24} />
+        </button>
       </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+      {error && (
+        <h1 className="text-red-500 mt-4 text-1xl">Pokemon não encontrado.</h1>
+      )}
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+      {loading && (
+        <ReactLoading type={"spin"} color={"#4FC0D0"} height={50} width={50} />
+      )}
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      {data && (
+        <div className=" bg-white shadow-lg mt-6 text-center rounded-lg overflow-hidden">
+          <Image
+            alt="Poke Search"
+            src={data.sprites.other["official-artwork"].front_default}
+            width={250}
+            height={250}
+            priority={true}
+            loading="eager"
+            onLoadingComplete={() => setLoadingImage(false)}
+          />
+          {loadingImage && (
+            <Image
+              alt="Poke Search"
+              src={"/loading.png"}
+              width={250}
+              height={250}
+              priority={true}
+              loading="eager"
+              onLoadStart={() => setLoadingImage(true)}
+              onLoadingComplete={() => setLoadingImage(false)}
+            />
+          )}
+          <div className="bg-slate-100">
+            <h1 className="text-2xl mt-2 p-4">
+              {data.forms[0].name.charAt(0).toUpperCase() +
+                data.forms[0].name.slice(1)}
+            </h1>
+            <div className="pb-2 px-3 flex justify-center">
+              {data.types.map((value) => (
+                <h1
+                  className={`fit-content p-2 m-2 rounded-lg ${
+                    pokemonTypes[value.type.name]
+                  }`}
+                >
+                  {value.type.name.charAt(0).toUpperCase() +
+                    value.type.name.slice(1)}
+                </h1>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
-  )
+  );
 }
