@@ -58,11 +58,12 @@ export async function Card(props: { search: string }) {
             data.forms[0].name.slice(1)}
         </h1>
         <div className="pb-2 px-3 flex justify-center">
-          {data.types.map((value) => (
+          {data.types.map((value, i) => (
             <h1
               className={`fit-content p-2 m-2 rounded-lg ${
                 types[value.type.name]
               }`}
+              key={i}
             >
               {value.type.name.charAt(0).toUpperCase() +
                 value.type.name.slice(1)}
