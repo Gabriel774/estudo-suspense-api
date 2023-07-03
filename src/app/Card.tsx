@@ -18,28 +18,28 @@ async function getData(search: string) {
     });
 }
 
+const types: { [key: string]: string } = {
+  electric: "bg-yellow-500",
+  fire: "bg-rose-400",
+  bug: "bg-lime-400",
+  grass: "bg-lime-400",
+  ghost: "bg-violet-400",
+  poison: "bg-purple-400",
+  flying: "bg-cyan-300",
+  ice: "bg-indigo-600",
+  normal: "bg-neutral-200",
+  steel: "bg-green-400",
+  water: "bg-sky-400",
+  rock: "bg-orange-400",
+  fighting: "bg-orange-400",
+  ground: "bg-orange-400",
+  fairy: "bg-purple-400",
+  psychic: "bg-purple-400",
+  dragon: "bg-sky-400",
+};
+
 export async function Card(props: { search: string }) {
   const data = await getData(props.search);
-
-  const types: { [key: string]: string } = {
-    electric: "bg-yellow-500",
-    fire: "bg-rose-400",
-    bug: "bg-lime-400",
-    grass: "bg-lime-400",
-    ghost: "bg-violet-400",
-    poison: "bg-purple-400",
-    flying: "bg-cyan-300",
-    ice: "bg-indigo-600",
-    normal: "bg-neutral-200",
-    steel: "bg-green-400",
-    water: "bg-sky-400",
-    rock: "bg-orange-400",
-    fighting: "bg-orange-400",
-    ground: "bg-orange-400",
-    fairy: "bg-purple-400",
-    psychic: "bg-purple-400",
-    dragon: "bg-sky-400",
-  };
 
   return data ? (
     <div className=" bg-white shadow-lg mt-6 text-center rounded-lg overflow-hidden">
